@@ -4,12 +4,13 @@ from sqlalchemy.orm import sessionmaker
 from conftest import SQLITE_URL
 from models import User, Game, Review
 
+
 class TestUser:
-    '''User in models.py'''
+    """User in models.py"""
 
     def test_has_attributes(self):
-        '''has attributes id, name, created_at, updated_at, reviews, and games.'''
-        
+        """has attributes id, name, created_at, updated_at, reviews, and games."""
+
         engine = create_engine(SQLITE_URL)
         Session = sessionmaker(bind=engine)
         session = Session()
@@ -29,7 +30,7 @@ class TestUser:
         session.commit()
 
     def test_has_many_reviews(self):
-        '''has an attribute "reviews" that is a sequence of Review records.'''
+        """has an attribute "reviews" that is a sequence of Review records."""
 
         engine = create_engine(SQLITE_URL)
         Session = sessionmaker(bind=engine)
@@ -55,11 +56,17 @@ class TestUser:
         session.commit()
 
     def test_has_many_games(self):
-        '''has an attribute "games" that is a sequence of Game records.'''
+        """has an attribute "games" that is a sequence of Game records."""
 
         engine = create_engine(SQLITE_URL)
         Session = sessionmaker(bind=engine)
         session = Session()
+
+        session.execute("DELETE FROM game_users")
+        session.execute("DELETE FROM reviews")
+        session.execute("DELETE FROM games")
+        session.execute("DELETE FROM users")
+        session.commit()
 
         game_1 = Game(title="Super Marvin Sunscreen")
         game_2 = Game(title="The Legend of Zumba: Breath of the Indoors")
@@ -78,7 +85,7 @@ class TestUser:
         assert game_1 in user.games
         assert game_2 in user.games
 
+        session.execute("DELETE FROM game_users")
         session.query(Game).delete()
         session.query(User).delete()
         session.commit()
-        
